@@ -13,13 +13,29 @@ export class TakeScreenshot extends Interaction {
     }
 
     performAs(actor: UsesAbilities & AnswersQuestions & CollectsArtifacts): PromiseLike<void> {
+
+        const ignoreBrowserNotAvailableForPhotosButReportAnyOther = (error: Error) => {
+            // todo: this needs further investigation; sometimes webdriver session dies before we can take a screenshot
+            if (~error.message.indexOf('does not have a valid session ID') || ~error.message.indexOf('Session ID is null')) {
+                // tslint:disable-next-line:no-console
+                console.warn(`[TakeScreenshot] Looks like there was a problem with taking a photo of ${ actor }: `, error.message);
+                return undefined;
+            } else if (/unexpected alert open/.test(error.message)) {
+                // tslint:disable-next-line:no-console
+                console.warn(`[TakeScreenshot] skipping photo attempt for ${ actor } following : `, error.message);
+                return undefined;
+            }
+
+            throw error;
+        };
+
         return Promise.all([
             BrowseTheWeb.as(actor).takeScreenshot(),
             actor.answer(this.name),
         ]).then(([ screenshot, name ]) => actor.collect(
             Photo.fromBase64(screenshot),
             new Name(name),
-        ));
+        )).catch(ignoreBrowserNotAvailableForPhotosButReportAnyOther);
     }
 
     toString(): string {
