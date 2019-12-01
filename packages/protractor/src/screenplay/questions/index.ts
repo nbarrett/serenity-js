@@ -6,6 +6,8 @@ export * from './CSSClasses';
 export * from './LastScriptExecution';
 export { Pick } from './Pick';
 export { Target } from './targets';
+export * from './SelectedValue';
+export * from './SelectedVisibleText';
 export * from './text';
 export * from './Value';
 export * from './Website';
