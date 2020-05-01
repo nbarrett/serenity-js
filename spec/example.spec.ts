@@ -1,9 +1,8 @@
-import 'jasmine';
-
-import { Ensure, includes } from '@serenity-js/assertions';
 import { actorCalled, engage } from '@serenity-js/core';
-import { Navigate, UseAngular, Website } from '@serenity-js/protractor';
+import { Navigate, UseAngular } from '@serenity-js/protractor';
+import 'jasmine';
 import { Actors } from '../src';
+import { RunsTask } from '../src/RunsTask';
 
 describe('serenity-js.org website', () => {
 
@@ -13,6 +12,6 @@ describe('serenity-js.org website', () => {
         actorCalled('Jasmine').attemptsTo(
             UseAngular.disableSynchronisation(),
             Navigate.to('https://serenity-js.org'),
-            Ensure.that(Website.title(), includes('Serenity/JS')),
+            RunsTask.thatReturnsRejectedPromise(),
         ));
 });
